@@ -11,3 +11,8 @@
 
 * 提交一个完整可运行的 `main.dart`。
 * 文件以 `{{人名英文缩写/英文名}}_main.dart` 放置。
+
+## 参考资料
+
+* Flutter 中文社区：https://flutter.cn/
+* Flutter 中文网：https://book.flutterchina.com/
