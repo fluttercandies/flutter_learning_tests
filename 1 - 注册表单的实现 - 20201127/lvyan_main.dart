@@ -118,7 +118,6 @@ class _MyHomePageState extends State<MyHomePage> {
           controller: _passwordController,
           maxLength: 20,
           obscureText: !_visible,
-          style: const TextStyle(fontStyle: FontStyle.italic),
           obscuringCharacter: '*',
           decoration: InputDecoration(
             prefixIcon: const Icon(Icons.lock),
@@ -127,7 +126,6 @@ class _MyHomePageState extends State<MyHomePage> {
             helperText: helperText,
             border: const UnderlineInputBorder(),
             suffixIcon: visibilityIcon,
-            hintStyle: const TextStyle(fontStyle: FontStyle.normal),
           ),
         );
       },
@@ -168,6 +166,30 @@ class _MyHomePageState extends State<MyHomePage> {
       },
     );
 
+    final Widget displayNameText = Text.rich(
+      TextSpan(
+        children: <InlineSpan>[
+          const TextSpan(text: '用户名：'),
+          TextSpan(
+            text: _usernameController.text.isEmpty ? '未填写' : _usernameController.text,
+            style: const TextStyle(decoration: TextDecoration.underline),
+          ),
+        ],
+      ),
+    );
+
+    final Widget displayPasswordText = Text.rich(
+      TextSpan(
+        children: <InlineSpan>[
+          const TextSpan(text: '密码：'),
+          TextSpan(
+            text: _passwordController.text.isEmpty ? '未填写' : _passwordController.text,
+            style: const TextStyle(fontStyle: FontStyle.italic),
+          ),
+        ],
+      ),
+    );
+
     return Scaffold(
       appBar: AppBar(title: Text(widget.title)),
       body: Center(
@@ -177,6 +199,9 @@ class _MyHomePageState extends State<MyHomePage> {
             usernameField,
             passwordField,
             loginButton,
+            const SizedBox(height: 20),
+            displayNameText,
+            displayPasswordText,
           ],
         ),
       ),
