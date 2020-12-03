@@ -1,4 +1,4 @@
-import 'dart:math' as math show Random;
+import 'dart:math' as math show Random, max;
 
 import 'package:flutter/material.dart';
 
@@ -20,71 +20,90 @@ class MainPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final dataList = [
+      [1, 2],
+      [3, 4],
+      [5, 6],
+      [7, 8, 9],
+      [1, 2, 3],
+    ];
     return Material(
       child: OrientationBuilder(
         builder: (BuildContext context, Orientation orientation) {
           if (orientation == Orientation.landscape) {
             return Row(children: [
-              list,
-              buildStack(true),
+              buildList(dataList),
+              buildStack(true, 8),
             ]);
           }
           return Column(
-            children: [list, buildStack(false)],
+            children: [buildList(dataList), buildStack(false, 7)],
           );
         },
       ),
     );
   }
 
-  Expanded buildStack(bool isLandscape) {
-    final generateChildren = List.generate(7, (index) {
-      return FractionallySizedBox(
-        widthFactor: 1 / 4,
-        heightFactor: 1 / 4,
-        alignment: AlignmentTween(
-          begin: Alignment(-1, -1),
-          end: Alignment(1, 1),
-        ).lerp(index / 6),
-        child: DecoratedBox(
-          decoration: BoxDecoration(color: randomColor),
-        ),
-      );
-    });
-    final generateLandscapeChildren = List.generate(7, (index) {
-      return FractionallySizedBox(
-        widthFactor: 1 / 4,
-        heightFactor: 1 / 4,
-        alignment: AlignmentTween(
-          begin: Alignment(1, -1),
-          end: Alignment(-1, 1),
-        ).lerp(index / 6),
-        child: DecoratedBox(
-          decoration: BoxDecoration(color: randomColor),
-        ),
-      );
-    });
+  Expanded buildStack(bool isLandscape, int n) {
+    final factor = 1 / ((n + 1) / 2);
+    final children = <Widget>[];
+    for (var index = 0; index < n; ++index) {
+      children.add(buildFractionallySizedBox(
+        factor,
+        Alignment(-1, -1),
+        Alignment(1, 1),
+        index,
+        n,
+      ));
+      if (isLandscape) {
+        children.add(buildFractionallySizedBox(
+          factor,
+          Alignment(1, -1),
+          Alignment(-1, 1),
+          index,
+          n,
+        ));
+      }
+    }
+
     return Expanded(
       child: Stack(
         fit: StackFit.expand,
-        children: [
-          ...generateChildren,
-          if (isLandscape) ...generateLandscapeChildren,
-        ],
+        children: children,
       ),
     );
   }
 
-  Expanded get list {
+  FractionallySizedBox buildFractionallySizedBox(
+      double factor, Alignment begin, Alignment end, int index, int n) {
+    return FractionallySizedBox(
+      widthFactor: factor,
+      heightFactor: factor,
+      alignment: AlignmentTween(
+        begin: begin,
+        end: end,
+      ).lerp(index / (n - 1)),
+      child: DecoratedBox(
+        decoration: BoxDecoration(color: randomColor),
+      ),
+    );
+  }
+
+  Expanded buildList(List<List<int>> data) {
+    assert((() {
+      return data.length >= 2 &&
+          data.expand((element) => element).fold<int>(
+                  0,
+                  (previousValue, element) =>
+                      math.max(previousValue, element)) >=
+              2;
+    })());
     return Expanded(
       child: Row(
-        children: [2, 5, 8, 3, 6, 9, 1, 4, 7].map((e) {
+        children: data.map((e) {
           return Expanded(
             child: Column(
-              children: [
-                buildBox(e),
-                buildBox(10 - e),
-              ],
+              children: e.map((e) => buildBox(e)).toList(),
             ),
           );
         }).toList(),
