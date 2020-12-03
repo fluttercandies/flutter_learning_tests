@@ -162,9 +162,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: <InlineSpan>[
           const TextSpan(text: '用户名：'),
           TextSpan(
-            text: _usernameController.text.isEmpty
-                ? '未填写'
-                : _usernameController.text,
+            text: _usernameController.text.isEmpty ? '未填写' : _usernameController.text,
             style: const TextStyle(decoration: TextDecoration.underline),
           ),
         ],
