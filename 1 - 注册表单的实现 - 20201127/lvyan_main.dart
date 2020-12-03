@@ -36,6 +36,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   bool _isLogin = false;
 
+  /// 使用流监听文本变化结合StreamBuilder可以减少setState的使用并控制控件刷新范围
   final StreamController<String> _usernameStream = StreamController<String>();
   final StreamController<String> _passwordStream = StreamController<String>();
 
@@ -54,21 +55,23 @@ class _MyHomePageState extends State<MyHomePage> {
         () => _listenChanged(_usernameStream, _usernameController.text));
   }
 
+  /// 将控件抽取成变量能减少build方法内控件嵌套造成的爬楼梯现象，方便阅读代码
+  /// 这与在build内部抽取的final变量除了作用域的区别之外并无其他太大区别
   Widget get _clearIcon => StreamBuilder<String>(
-    stream: _usernameStream.stream,
-    builder: (_, AsyncSnapshot<String> snapshot) {
-      Widget child = const SizedBox.shrink();
+        stream: _usernameStream.stream,
+        builder: (_, AsyncSnapshot<String> snapshot) {
+          Widget child = const SizedBox.shrink();
 
-      if (snapshot.hasData && snapshot.data.isNotEmpty) {
-        child = IconButton(
-          icon: const Icon(Icons.clear),
-          onPressed: () => _usernameController.clear(),
-        );
-      }
+          if (snapshot.hasData && snapshot.data.isNotEmpty) {
+            child = IconButton(
+              icon: const Icon(Icons.clear),
+              onPressed: () => _usernameController.clear(),
+            );
+          }
 
-      return child;
-    },
-  );
+          return child;
+        },
+      );
 
   @override
   Widget build(BuildContext context) {
@@ -99,6 +102,7 @@ class _MyHomePageState extends State<MyHomePage> {
           if (password.length < 8) {
             helperText = '密码不能少于8位';
           } else if (password.split('').toSet().length < 6) {
+            // 利用Set集合的特性判断密码复杂度
             helperText = '密码复杂度不能低于6';
           }
         }
@@ -197,7 +201,10 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
-  void _listenChanged(StreamController<String> streamController, String text) {
+  void _listenChanged(
+    StreamController<String> streamController,
+    String text,
+  ) {
     streamController.sink.add(text);
 
     _loginStream.sink.add(_usernameController.text.isNotEmpty &&
@@ -207,6 +214,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void dispose() {
+    // 记得释放资源
     _usernameStream.close();
     _passwordStream.close();
     _loginStream.close();
