@@ -75,7 +75,7 @@ class _MyHomePageState extends State<MyHomePage> {
       Future.delayed(
         Duration(seconds: 3),
       ).then(
-        (value) => setState(() {
+        (value) => if (mounted) setState(() {
           submitting = false;
         }),
       );
