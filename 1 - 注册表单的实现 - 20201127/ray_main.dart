@@ -57,11 +57,7 @@ class _MyHomePageState extends State<MyHomePage> {
     if (pwd == null || pwd.length < 8) {
       return false;
     }
-    Set set = Set();
-    for(var i = 0; i<pwd.length; i++ ) {
-      set.add(pwd.codeUnitAt(i));
-    }
-    return set.length >= 6;
+    return pwd.split('').toSet().length >= 6;
   }
 
   void _onSubmit() {
