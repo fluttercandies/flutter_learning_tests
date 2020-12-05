@@ -21,6 +21,8 @@ class MainPage extends StatefulWidget {
 class _MainPageState extends State<MainPage> {
   TextEditingController usernameController;
   TextEditingController passwordController;
+
+  /// 使用`ValueNotifier`和`ValueListenableBuilder`实现局部刷新
   ValueNotifier<bool> obscureTextState;
   ValueNotifier<bool> canSubmitState;
   ValueNotifier<bool> loadingState;
