@@ -112,13 +112,11 @@ class PercentBoxWidget extends LeafRenderObjectWidget {
 class RenderPercentBox extends RenderBox {
   int max;
   List<int> data;
-  Paint bgPaint;
-  TextPainter textPainter;
+  final Paint bgPaint = Paint()..isAntiAlias = true; //背景画笔
+  final TextPainter textPainter =
+      TextPainter(textDirection: TextDirection.ltr); //文字画笔
 
-  RenderPercentBox(this.max, this.data) {
-    bgPaint = Paint()..isAntiAlias = true;
-    textPainter = TextPainter(textDirection: TextDirection.ltr);
-  }
+  RenderPercentBox(this.max, this.data);
 
   @override
   void performLayout() {
@@ -129,40 +127,42 @@ class RenderPercentBox extends RenderBox {
   void paint(PaintingContext context, Offset offset) {
     if (data.isNotEmpty) {
       Canvas canvas = context.canvas;
-      canvas.save();
-      canvas.translate(offset.dx, offset.dy);
+      canvas.save(); //保存当前canvas
+      canvas.translate(offset.dx, offset.dy); //画布移动到当前的便宜位置
       double width = size.width / data.length;
       for (int i = 0; i < data.length; i++) {
         int value = data[i];
         bgPaint..color = RandomColor.getColor();
         double topHeight = size.height * (value / max);
-        var topRect = Rect.fromLTWH(0, 0, width, topHeight);
+        Rect topRect = Rect.fromLTWH(0, 0, width, topHeight);
         canvas.drawRect(topRect, bgPaint);
-        textPainter.text = TextSpan(text: value.toString());
-        textPainter.layout(maxWidth: width);
-        textPainter.paint(
-          canvas,
-          Offset(
-            topRect.center.dx - textPainter.width / 2,
-            topRect.center.dy - textPainter.height / 2,
-          ),
-        );
-        var bottomRect =
+        textPainter
+          ..text = TextSpan(text: value.toString()) //设置文字
+          ..layout(maxWidth: width) //布局
+          ..paint(
+            canvas,
+            Offset(
+              topRect.center.dx - textPainter.width / 2,
+              topRect.center.dy - textPainter.height / 2,
+            ),
+          ); //绘制
+        Rect bottomRect =
             Rect.fromLTWH(0, topHeight, width, size.height - topHeight);
         bgPaint..color = RandomColor.getColor();
         canvas.drawRect(bottomRect, bgPaint);
-        textPainter.text = TextSpan(text: (max - value).toString());
-        textPainter.layout(maxWidth: width);
-        textPainter.paint(
-          canvas,
-          Offset(
-            bottomRect.center.dx - textPainter.width / 2,
-            bottomRect.center.dy - textPainter.height / 2,
-          ),
-        );
-        canvas.translate(width, 0);
+        textPainter
+          ..text = TextSpan(text: (max - value).toString())
+          ..layout(maxWidth: width)
+          ..paint(
+            canvas,
+            Offset(
+              bottomRect.center.dx - textPainter.width / 2,
+              bottomRect.center.dy - textPainter.height / 2,
+            ),
+          );
+        canvas.translate(width, 0); //移动画布
       }
-      canvas.restore();
+      canvas.restore(); //恢复canvas
     }
   }
 }
@@ -188,7 +188,7 @@ class StackBoxWidget extends LeafRenderObjectWidget {
 
 class RenderStackBox extends RenderBox {
   int boxCount;
-  Paint boxPaint = Paint()..isAntiAlias = true;
+  final Paint boxPaint = Paint()..isAntiAlias = true;
 
   RenderStackBox(this.boxCount);
 
@@ -204,14 +204,16 @@ class RenderStackBox extends RenderBox {
     Canvas canvas = context.canvas;
     canvas.save();
     canvas.translate(offset.dx, offset.dy);
-    double ltrLeft = 0;
+    double ltrLeft = 0; //左上角开始的方块的left
     double top = 0;
-    double rtlLeft = size.width - width;
+    double rtlLeft = size.width - width; //右上角开始的方块的left
     for (int i = 0; i < boxCount; i++) {
       boxPaint.color = RandomColor.getColor();
-      canvas.drawRect(Rect.fromLTWH(ltrLeft, top, width, width), boxPaint);
+      canvas.drawRect(
+          Rect.fromLTWH(ltrLeft, top, width, width), boxPaint); //左上角开始的方块
       boxPaint.color = RandomColor.getColor();
-      canvas.drawRect(Rect.fromLTWH(rtlLeft, top, width, width), boxPaint);
+      canvas.drawRect(
+          Rect.fromLTWH(rtlLeft, top, width, width), boxPaint); //右上角开始的方块
       ltrLeft += halfWidth;
       rtlLeft -= halfWidth;
       top += halfWidth;
