@@ -59,8 +59,6 @@ class BaigeWidget extends StatelessWidget {
     return Expanded(
       child: LayoutBuilder(
         builder: (BuildContext context, BoxConstraints constraints) {
-          print('111-${constraints.maxHeight}');
-          print('222-${constraints.maxWidth}');
           final width = constraints.maxWidth / 8;
           final height = constraints.maxWidth / 8;
           return Stack(
