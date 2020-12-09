@@ -57,16 +57,24 @@ class BaigeWidget extends StatelessWidget {
   }
   Widget cube() {
     return Expanded(
-      child: Stack(
-        children: cubeList.asMap().keys.map((item) => Positioned(
-          child: Container(
-            color: RandomColor.getColor(),
-          ),  
-          left: item * 50.0,
-          right: (6.0 - item) * 50.0,
-          top: item * 50.0,
-          bottom: (6.0 - item) * 50.0,
-        )).toList(),
+      child: LayoutBuilder(
+        builder: (BuildContext context, BoxConstraints constraints) {
+          print('111-${constraints.maxHeight}');
+          print('222-${constraints.maxWidth}');
+          final width = constraints.maxWidth / 8;
+          final height = constraints.maxWidth / 8;
+          return Stack(
+            children: cubeList.asMap().keys.map((item) => Positioned(
+              child: Container(
+                color: RandomColor.getColor(),
+              ),  
+              left: item * width,
+              right: (6.0 - item) * width,
+              top: item * height,
+              bottom: (6.0 - item) * height,
+            )).toList(),
+          );
+        }
       ),
     );
   }
