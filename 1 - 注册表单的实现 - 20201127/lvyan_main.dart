@@ -31,59 +31,50 @@ class MyHomePage extends StatefulWidget {
 
 class _MyHomePageState extends State<MyHomePage> {
   final TextEditingController _usernameController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
 
   bool _visible = false;
 
   bool _isLogin = false;
 
-  final StreamController<String> _usernameStream =
-      StreamController<String>.broadcast();
-  final StreamController<String> _passwordStream =
-      StreamController<String>.broadcast();
+  /// 使用流监听文本变化结合StreamBuilder可以减少setState的使用并控制控件刷新范围
+  final StreamController<String> _usernameStream = StreamController<String>();
+  final StreamController<String> _passwordStream = StreamController<String>();
 
   /// 不知道怎么合并两个流的结果 😄
   final StreamController<bool> _loginStream = StreamController<bool>();
 
   Timer _loginTimer;
 
+  String _password = '';
+
   @override
   void initState() {
-    _usernameController.addListener(() {
-      _usernameStream.sink.add(_usernameController.text);
-
-      _loginStream.sink.add(_usernameController.text.isNotEmpty &&
-          _passwordController.text.length >= 8 &&
-          _passwordController.text.split('').toSet().length >= 6);
-    });
-    _passwordController.addListener(() {
-      _passwordStream.sink.add(_passwordController.text);
-
-      _loginStream.sink.add(_usernameController.text.isNotEmpty &&
-          _passwordController.text.length >= 8 &&
-          _passwordController.text.split('').toSet().length >= 6);
-    });
     super.initState();
+
+    _usernameController.addListener(
+        () => _listenChanged(_usernameStream, _usernameController.text));
   }
+
+  /// 将控件抽取成变量能减少build方法内控件嵌套造成的爬楼梯现象，方便阅读代码
+  /// 这与在build内部抽取的final变量除了作用域的区别之外并无其他太大区别
+  Widget get _clearIcon => StreamBuilder<String>(
+        stream: _usernameStream.stream,
+        builder: (_, AsyncSnapshot<String> snapshot) {
+          Widget child = const SizedBox.shrink();
+
+          if (snapshot.hasData && snapshot.data.isNotEmpty) {
+            child = IconButton(
+              icon: const Icon(Icons.clear),
+              onPressed: () => _usernameController.clear(),
+            );
+          }
+
+          return child;
+        },
+      );
 
   @override
   Widget build(BuildContext context) {
-    final Widget clearIcon = StreamBuilder<String>(
-      stream: _usernameStream.stream,
-      builder: (_, AsyncSnapshot<String> snapshot) {
-        Widget child = const SizedBox.shrink();
-
-        if (snapshot.hasData && snapshot.data.isNotEmpty) {
-          child = IconButton(
-            icon: const Icon(Icons.clear),
-            onPressed: () => _usernameController.clear(),
-          );
-        }
-
-        return child;
-      },
-    );
-
     final Widget usernameField = TextField(
       controller: _usernameController,
       maxLength: 20,
@@ -92,7 +83,7 @@ class _MyHomePageState extends State<MyHomePage> {
         hintText: '请输入用户名',
         counterText: '',
         border: const UnderlineInputBorder(),
-        suffixIcon: clearIcon,
+        suffixIcon: _clearIcon,
       ),
     );
 
@@ -106,17 +97,22 @@ class _MyHomePageState extends State<MyHomePage> {
       builder: (_, AsyncSnapshot<String> snapshot) {
         String helperText;
 
-        if (snapshot.hasData && snapshot.data.isNotEmpty) {
-          if (_passwordController.text.length < 8) {
+        final String password = snapshot.data;
+        if (snapshot.hasData && password.isNotEmpty) {
+          if (password.length < 8) {
             helperText = '密码不能少于8位';
-          } else if (_passwordController.text.split('').toSet().length < 6) {
+          } else if (password.split('').toSet().length < 6) {
+            // 利用Set集合的特性判断密码复杂度
             helperText = '密码复杂度不能低于6';
           }
         }
 
         return TextField(
-          controller: _passwordController,
           maxLength: 20,
+          onChanged: (String text) {
+            _password = text;
+            _listenChanged(_passwordStream, text);
+          },
           obscureText: !_visible,
           obscuringCharacter: '*',
           decoration: InputDecoration(
@@ -152,13 +148,8 @@ class _MyHomePageState extends State<MyHomePage> {
                   setState(() {
                     _isLogin = true;
 
-                    _loginTimer = Timer.periodic(
-                      const Duration(seconds: 3),
-                      (Timer timer) => setState(() {
-                        _isLogin = false;
-                        timer.cancel();
-                      }),
-                    );
+                    _loginTimer = Timer(const Duration(seconds: 3),
+                        () => setState(() => _isLogin = false));
                   });
                 }
               : null,
@@ -183,7 +174,7 @@ class _MyHomePageState extends State<MyHomePage> {
         children: <InlineSpan>[
           const TextSpan(text: '密码：'),
           TextSpan(
-            text: _passwordController.text.isEmpty ? '未填写' : _passwordController.text,
+            text: _password.isEmpty ? '未填写' : _password,
             style: const TextStyle(fontStyle: FontStyle.italic),
           ),
         ],
@@ -208,14 +199,25 @@ class _MyHomePageState extends State<MyHomePage> {
     );
   }
 
+  void _listenChanged(
+    StreamController<String> streamController,
+    String text,
+  ) {
+    streamController.sink.add(text);
+
+    _loginStream.sink.add(_usernameController.text.isNotEmpty &&
+        _password.length >= 8 &&
+        _password.split('').toSet().length >= 6);
+  }
+
   @override
   void dispose() {
+    // 记得释放资源
     _usernameStream.close();
     _passwordStream.close();
     _loginStream.close();
     _loginTimer?.cancel();
     _usernameController.dispose();
-    _passwordController.dispose();
     super.dispose();
   }
 }
