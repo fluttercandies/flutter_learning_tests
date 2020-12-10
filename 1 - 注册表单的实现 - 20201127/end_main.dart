@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:testapp/baige.dart';
 import 'dart:async';
 
 void main() => runApp(new MyApp());
@@ -42,9 +43,10 @@ class RegisgtFormState extends State<RegisgtForm> {
 
   final controller = TextEditingController();
   final pwdController = TextEditingController();
-  
+
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
     controller.addListener(() {
       final user = controller.text;
       setState(() {
@@ -62,6 +64,10 @@ class RegisgtFormState extends State<RegisgtForm> {
       });
       // print('password ${pwdController.text}');
     });
+  }
+  
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
         title: Text('注册表单'),
@@ -125,25 +131,34 @@ class RegisgtFormState extends State<RegisgtForm> {
             )
           ),
           Text(isLogin ? userName : ''),
-          Text(isLogin ? password : '')
+          Text(isLogin ? password : ''),
+          Center(
+            child: Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: RaisedButton(
+                onPressed: _pushBaige,
+                child: Text('百格齐放')
+              )
+            )
+          )
         ]
       )
     );
   }
 
-  _clearUserText (controller) {
+  void _clearUserText(controller) {
     controller.clear();
     print('clear text');
   }
 
-  _isMask () {
+  void _isMask() {
     setState(() {
       isMask = !isMask;
     });
     print('whether to show mask ${isMask}');
   }
 
-  _confirm () {
+  void _confirm() {
     setState(() {
       isLogin = true;
     });
@@ -152,6 +167,16 @@ class RegisgtFormState extends State<RegisgtForm> {
         isLogin = false;
       });
     });
+  }
+
+  void _pushBaige() {
+    Navigator.of(context).push(
+      MaterialPageRoute(
+        builder: (context) {
+          return BaigeWidget();
+        }
+      )
+    );
   }
 }
 
