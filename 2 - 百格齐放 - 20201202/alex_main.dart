@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Test App Demo',
       theme: ThemeData(primarySwatch: Colors.blue),
-      home: const TestTextFieldPage(),
+      home: const BlossomPage(),
     );
   }
 }
