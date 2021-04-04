@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:testapp/baige.dart';
 import 'dart:async';
 
 void main() => runApp(new MyApp());
@@ -173,7 +172,8 @@ class RegisgtFormState extends State<RegisgtForm> {
     Navigator.of(context).push(
       MaterialPageRoute(
         builder: (context) {
-          return BaigeWidget();
+          // return BaigeWidget();
+          return const SizedBox.shrink();
         }
       )
     );

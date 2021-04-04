@@ -38,6 +38,7 @@ class _MyHomePageState extends State<MyHomePage> {
 
   @override
   void initState() {
+    super.initState();
     _accountController = TextEditingController()..addListener(_checkInput);
     _pwdController = TextEditingController()..addListener(_checkInput);
   }
@@ -71,9 +72,9 @@ class _MyHomePageState extends State<MyHomePage> {
       Future.delayed(
         Duration(seconds: 3),
       ).then(
-        (value) => if (mounted) setState(() {
+        (value) => mounted ? setState(() {
           submitting = false;
-        }),
+        }) : null,
       );
     });
   }

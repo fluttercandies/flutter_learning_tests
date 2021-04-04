@@ -14,7 +14,7 @@ class MyApp extends StatelessWidget {
 }
 
 class TestTextFieldPage extends StatefulWidget {
-  const TestTextFieldPage({Key? key}) : super(key: key);
+  const TestTextFieldPage({Key key}) : super(key: key);
 
   @override
   _TestTextFieldPageState createState() => _TestTextFieldPageState();
@@ -125,17 +125,17 @@ class _TestTextFieldPageState extends State<TestTextFieldPage> {
 /// 将三个 [ValueNotifier] 整合在一起的 builder widget。套中套中套。
 class ValueListenableBuilder3<A, B, C> extends StatelessWidget {
   const ValueListenableBuilder3({
-    Key? key,
-    required this.firstNotifier,
-    required this.secondNotifier,
-    required this.thirdNotifier,
-    required this.builder,
+    Key key,
+    @required this.firstNotifier,
+    @required this.secondNotifier,
+    @required this.thirdNotifier,
+    @required this.builder,
   }) : super(key: key);
 
   final ValueNotifier<A> firstNotifier;
   final ValueNotifier<B> secondNotifier;
   final ValueNotifier<C> thirdNotifier;
-  final Widget Function(BuildContext, A, B, C, Widget?) builder;
+  final Widget Function(BuildContext, A, B, C, Widget) builder;
 
   @override
   Widget build(BuildContext context) {

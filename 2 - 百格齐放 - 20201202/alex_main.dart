@@ -20,7 +20,7 @@ class MyApp extends StatelessWidget {
 }
 
 class BlossomPage extends StatelessWidget {
-  const BlossomPage({Key? key}) : super(key: key);
+  const BlossomPage({Key key}) : super(key: key);
 
   List<List<int>> get flexLists {
     return <List<int>>[
