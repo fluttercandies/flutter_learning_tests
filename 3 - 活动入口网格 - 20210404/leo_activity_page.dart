@@ -129,7 +129,7 @@ class ActivityEnterPageState extends State<ActivityEnterPage> {
                               widget.rowCount * widget.columnCount * index;
                           _resultIndex = _listIndex + _resultIndex;
                         }
-                        widget?.itemCallback(_resultIndex);
+                        widget.itemCallback?.call(_resultIndex);
                       },
                     );
                   },
