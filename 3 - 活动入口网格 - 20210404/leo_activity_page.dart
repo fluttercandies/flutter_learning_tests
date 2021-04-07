@@ -251,7 +251,10 @@ class _WrapItem extends StatelessWidget {
           children: <Widget>[
             Icon(model.icon),
             const Spacer(),
-            Text(model.name),
+            Text(
+              model.name, 
+              overflow: TextOverflow.ellipsis,
+            ),
           ],
         ),
       ),
